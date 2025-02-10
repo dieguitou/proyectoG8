@@ -90,7 +90,7 @@ DATABASES = {
         'NAME': 'inmuebledb',
         'USER': 'user',
         'PASSWORD': 'password',
-        'HOST': 'mysql_db',  # Cambia esto si el servicio en docker-compose tiene otro nombre
+        'HOST': 'mysql',  # Cambia esto si el servicio en docker-compose tiene otro nombre
         'PORT': '3306',
     }
 }

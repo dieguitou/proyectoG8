@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 services:
   mysql:
@@ -6,43 +6,63 @@ services:
     container_name: mysql_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root  # Mantiene la contraseña del usuario root
-      MYSQL_DATABASE: inmuebledb  # Crea la base de datos automáticamente
-      MYSQL_USER: user  # Define un usuario regular en lugar de root
-      MYSQL_PASSWORD: password  # Contraseña del usuario regular
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inmuebledb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     volumes:
       - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uuser -ppassword -e 'SELECT 1'"]
+      interval: 10s
+      retries: 10
+      timeout: 10s
+
 
   backend:
     build: ./backend
     container_name: django_backend
     restart: always
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy  # Django solo inicia cuando MySQL está listo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
     environment:
       DB_NAME: inmuebledb
-      DB_USER: user  # Asegúrate de usar el usuario que creaste en MySQL
+      DB_USER: user  # Usuario de MySQL
       DB_PASSWORD: password
-      DB_HOST: mysql
+      DB_HOST: mysql  # Este debe coincidir con el nombre del servicio de MySQL
       DB_PORT: 3306
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@example.com
+      DJANGO_SUPERUSER_PASSWORD: admin123
     volumes:
       - ./backend:/app
     ports:
       - "8000:8000"
     networks:
       - app_network
-    command: python manage.py runserver 0.0.0.0:8000  # Habilita recarga automática
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py createsuperuser --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build: ./frontend
     container_name: vue_frontend
     restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy  # Asegura que el backend está listo antes de iniciar
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -52,7 +72,7 @@ services:
       - VITE_HOST=0.0.0.0
     networks:
       - app_network
-    command: npm run dev  # Habilita Hot Reload
+    command: npm run dev -- --host 0.0.0.0  # Permite acceso externo a Vue
 
 volumes:
   db_data:
