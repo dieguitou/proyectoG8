@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,16 +82,19 @@ WSGI_APPLICATION = 'inmuebles.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'inmuebledb',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'mysql',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'mysql_db',  # Cambia esto si el servicio en docker-compose tiene otro nombre
         'PORT': '3306',
     }
 }
+
 
 
 # Password validation
