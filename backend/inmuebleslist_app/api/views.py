@@ -24,11 +24,26 @@ class EmpresaList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gener
     def post(self, request, *args,**kwargs):
         return self.create(request, *args, **kwargs)
 
-class EmpresaDetail(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class EmpresaDetail(
+    mixins.RetrieveModelMixin,   # Para obtener un solo objeto (GET)
+    mixins.UpdateModelMixin,     # Para actualizar un objeto (PUT/PATCH)
+    mixins.DestroyModelMixin,    # Para eliminar un objeto (DELETE)
+    generics.GenericAPIView
+):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
-    def get(self, request, *args,**kwargs):
-        return self.retrieve(request, *args,**kwars)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)  # Obtener empresa
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)  # Actualizar empresa
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)  # Actualización parcial
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)  # Eliminar empresa
 
 
 class PersonaList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
@@ -61,16 +76,28 @@ class PersonaDetail(mixins.RetrieveModelMixin,
 
 class InteresadoList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = Interesado.objects.all()
-    serializer_class = PersonaSerializer
+    serializer_class = InteresadoSerializer
     def get(self, request, *args,**kwargs):
         return self.list(request, *args, **kwargs)
     def post(self, request, *args,**kwargs):
         return self.create(request, *args, **kwargs)
-class InteresadoDetail(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class InteresadoDetail(
+    mixins.RetrieveModelMixin,  # Para obtener detalles (GET)
+    mixins.UpdateModelMixin,    # Para actualizar (PUT)
+    mixins.DestroyModelMixin,   # Para eliminar (DELETE)
+    generics.GenericAPIView
+):
     queryset = Interesado.objects.all()
-    serializer_class = PersonaSerializer
-    def get(self, request, *args,**kwargs):
-        return self.retrieve(request, *args,**kwars)
+    serializer_class = InteresadoSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class InmuebleListAV(APIView):
