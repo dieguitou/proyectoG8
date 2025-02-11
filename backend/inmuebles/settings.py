@@ -55,8 +55,38 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
-MIDDLEWARE.insert(1, "corsheaders.middleware.CorsMiddleware")
+# MIDDLEWARE.insert(0, "corsheaders.middleware.CorsMiddleware")
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite (Vue 3)
+    "http://localhost:3000",  # React (si lo necesitas)
+]
+
+CORS_ALLOW_METHODS = [
+'DELETE',
+'GET',
+'OPTIONS',
+'PATCH',
+'POST',
+'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+]
+# Permitir solicitudes con credenciales (si usas autenticación)
+CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOW_ALL_ORIGINS = True  # Permitir peticiones desde cualquier frontend
 ROOT_URLCONF = 'inmuebles.urls'
 

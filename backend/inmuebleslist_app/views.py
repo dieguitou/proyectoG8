@@ -19,3 +19,5 @@
 #        'descripcion': inmueble.descripcion
 #    }
 #    return JsonResponse(data)
+
+# views.py

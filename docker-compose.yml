@@ -12,7 +12,7 @@ services:
       MYSQL_PASSWORD: password
     volumes:
       - db_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Si tienes un archivo de inicialización
     ports:
       - "3306:3306"
     networks:
@@ -32,7 +32,7 @@ services:
       mysql:
         condition: service_healthy  # Django solo inicia cuando MySQL está listo
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 10s
       retries: 5
       timeout: 5s
@@ -51,10 +51,7 @@ services:
       - "8000:8000"
     networks:
       - app_network
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py createsuperuser --noinput &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: ["/bin/bash", "/app/wait-for-db.sh"]
 
   frontend:
     build: ./frontend
